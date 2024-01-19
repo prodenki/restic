@@ -106,6 +106,7 @@ func getCredentials(cfg Config) (*credentials.Credentials, error) {
 	//  - IAM profile based credentials. (performs an HTTP
 	//    call to a pre-defined endpoint, only valid inside
 	//    configured ec2 instances)
+	//  - AWS SSO based credentials (requires valid SSO session and AWS_PROFILE to be set)
 	creds := credentials.NewChainCredentials([]credentials.Provider{
 		&credentials.EnvAWS{},
 		&credentials.Static{
@@ -122,6 +123,7 @@ func getCredentials(cfg Config) (*credentials.Credentials, error) {
 				Transport: http.DefaultTransport,
 			},
 		},
+		NewSSOCredentialsProvider(SSOSessionHandler),
 	})
 
 	c, err := creds.Get()
